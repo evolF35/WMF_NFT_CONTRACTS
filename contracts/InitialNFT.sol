@@ -6,33 +6,55 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 
 contract WMF_NFT is ERC721URIStorage, Ownable {
+
+    uint256 private constant NUM_TYPE_MUSIC_GENRES = 20;
+    uint256 private constant MAX_CROSS_GENRES = 400;
+    uint256 private constant MAX_GENRES = 600;
     uint256 public constant MAX_SUPPLY = 1000;
-    uint256 public constant COMBINE_ATTRIBUTE_INITIAL_VALUE = 100;
+
+    uint256 public numGenresMinted;
     string private baseURI;
 
     mapping (uint256 => bool) public burnedTokens;
     mapping (address => bool) public whitelistedAddresses;
+    mapping (uint256 => bool) public mintedGenres;
 
-    constructor(string memory _name, string memory _symbol, string memory _baseURI) ERC721(_name, _symbol) {
-        baseURI = _baseURI;
-    }
+
+    constructor(string memory _name, string memory _symbol) ERC721(_name, _symbol) {}
 
     function _baseURI() internal view virtual override returns (string memory) {
         return baseURI;
     }
-
-    function mintToken(address to, uint256 tokenId, string memory metadataHash) public onlyOwner {
-    _mint(to, tokenId);
-    _setTokenURI(tokenId, metadataHash);
+    function setBaseURI(string memory uri) external onlyOwner {
+        baseURI = uri;
     }
 
-    function getCombinedAttribute(uint256 tokenId) public view returns (uint256) {
-        require(_exists(tokenId), "Token does not exist");
-        return COMBINE_ATTRIBUTE_INITIAL_VALUE - (tokenId % COMBINE_ATTRIBUTE_INITIAL_VALUE);
+    function mintGenre() public payable {
+        require(numGenresMinted < MAX_GENRES, "All tokens have been minted");
+        uint256 tokenId = numGenresMinted + 1;
+        _safeMint(msg.sender, tokenId);
+        mintedGenres[tokenId] = true; // add this line to update the mintedGenres mapping
+        numGenresMinted++;
     }
 
+    function mintCrossGenre(uint256 genreTokenId1, uint256 genreTokenId2) public payable {
+        require(genreTokenId1 > 0 && genreTokenId1 <= numGenresMinted, "Invalid genre token ID");
+        require(genreTokenId2 > 0 && genreTokenId2 <= numGenresMinted, "Invalid genre token ID");
+        require(genreTokenId1 != genreTokenId2, "Cannot burn two of the same genre");
 
+        // Check that both genre NFTs have been minted
+        require(mintedGenres[genreTokenId1] == true, "Genre NFT has not been minted yet");
+        require(mintedGenres[genreTokenId2] == true, "Genre NFT has not been minted yet");
 
+        // Burn the two genre NFTs
+        _burn(genreTokenId1);
+        _burn(genreTokenId2);
+
+        // Mint the cross-genre NFT
+        uint256 tokenId = numGenresMinted + 1;
+        _safeMint(msg.sender, tokenId);
+        numGenresMinted++;
+}
 
     function burnToken(uint256 tokenId) public {
         require(_exists(tokenId), "Token does not exist");
