@@ -31,6 +31,9 @@ contract WMF_NFT is ERC721URIStorage, Ownable {
         return COMBINE_ATTRIBUTE_INITIAL_VALUE - (tokenId % COMBINE_ATTRIBUTE_INITIAL_VALUE);
     }
 
+
+
+
     function burnToken(uint256 tokenId) public {
         require(_exists(tokenId), "Token does not exist");
         require(ownerOf(tokenId) == msg.sender, "Only the owner can burn the token");
@@ -39,7 +42,6 @@ contract WMF_NFT is ERC721URIStorage, Ownable {
         _burn(tokenId);
         burnedTokens[tokenId] = true;
     }
-    
     function setWhitelistedAddress(address addr, bool status) public onlyOwner {
         whitelistedAddresses[addr] = status;
     }
