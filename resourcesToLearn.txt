@@ -1,0 +1,6 @@
+
+simple NFT implementation: https://merunasgrincalaitis.medium.com/how-to-create-a-single-nft-the-best-way-in-2-minutes-e73b0be59495
+
+in order to mint it you have to put in the metadata into the constructor and actively call mint. 
+
+
