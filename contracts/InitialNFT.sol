@@ -8,12 +8,10 @@ import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 import "@chainlink/contracts/src/v0.8/VRFConsumerBaseV2.sol";
 import "@chainlink/contracts/src/v0.8/interfaces/VRFCoordinatorV2Interface.sol";
 
-
 error RandomIpfsNft__AlreadyInitialized();
 error RandomIpfsNft__NeedMoreETHSent();
 error RandomIpfsNft__RangeOutOfBounds();
 error RandomIpfsNft__TransferFailed();
-
 
 contract WMF_NFT is ERC721URIStorage,VRFConsumerBaseV2 ,Ownable {
 
@@ -80,7 +78,6 @@ contract WMF_NFT is ERC721URIStorage,VRFConsumerBaseV2 ,Ownable {
     event NftRequested(uint256 indexed requestId, address requester);
     event NftMinted(Genre genre, address minter);
 
-
     string[] internal genre_URIS;
 
     uint256 private constant NUM_TYPE_MUSIC_GENRES = 20;
@@ -96,7 +93,6 @@ contract WMF_NFT is ERC721URIStorage,VRFConsumerBaseV2 ,Ownable {
     mapping (address => bool) public whitelistedAddresses;
     mapping (uint256 => bool) public mintedGenres;
     mapping (uint256 => bool) public mintedCrossGenres;
-
 
     constructor(
         address vrfCoordinatorV2,
@@ -157,7 +153,6 @@ contract WMF_NFT is ERC721URIStorage,VRFConsumerBaseV2 ,Ownable {
 
     function getChanceArray() public pure returns (uint256[44] memory) {
     uint256[44] memory chanceArray;
-
     uint8[44] memory tempArray = [  1,1,1,1,1,1,1,
                                     1,1,1,1,1,1,1,
                                     1,1,1,1,1,1,1,
