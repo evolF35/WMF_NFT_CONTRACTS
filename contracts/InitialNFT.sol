@@ -123,7 +123,6 @@ contract WMF_NFT is ERC721URIStorage,VRFConsumerBaseV2 ,Ownable {
         s_initialized = true;
     }
 
-
     function requestNft() public payable returns (uint256 requestId) {
         if (msg.value < i_mintFee) {
             revert RandomIpfsNft__NeedMoreETHSent();
