@@ -7,13 +7,12 @@ import "@chainlink/contracts/src/v0.8/VRFConsumerBaseV2.sol";
 import "@chainlink/contracts/src/v0.8/interfaces/VRFCoordinatorV2Interface.sol";
 import "hardhat/console.sol";
 
-
 error RandomIpfsNft__AlreadyInitialized();
 error RandomIpfsNft__NeedMoreETHSent();
 error RandomIpfsNft__RangeOutOfBounds();
 error RandomIpfsNft__TransferFailed();
 
-contract RandomIpfsNft is ERC721URIStorage, VRFConsumerBaseV2 , Ownable {
+contract RandomIpfsNft is ERC721URIStorage, VRFConsumerBaseV2, Ownable {
     // Types
     enum Breed {
         PUG,
@@ -138,3 +137,5 @@ contract RandomIpfsNft is ERC721URIStorage, VRFConsumerBaseV2 , Ownable {
         return s_tokenCounter;
     }
 }
+
+
