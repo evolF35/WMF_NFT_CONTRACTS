@@ -50,7 +50,7 @@ contract RandomIpfsNft is ERC721URIStorage, VRFConsumerBaseV2, Ownable {
     uint256 private immutable i_mintFee;
     uint256 private s_tokenCounter;
     uint256 internal constant MAX_CHANCE_VALUE = 100;
-    string[] internal s_dogTokenUris;
+    string[] internal s_GenreURIs;
     bool private s_initialized;
 
     // VRF Helpers
@@ -104,11 +104,11 @@ contract RandomIpfsNft is ERC721URIStorage, VRFConsumerBaseV2, Ownable {
         uint256 moddedRng = randomWords[0] % MAX_CHANCE_VALUE;
         Genre genre = getGenreFromModdedRng(moddedRng);
         _safeMint(consumer, newItemId);
-        _setTokenURI(newItemId, genre_URIS[uint256(genre)]);
+        _setTokenURI(newItemId, s_GenreURIs[uint256(genre)]);
         emit NftMinted(genre, consumer);
     }
 
-    function getChanceArray() public pure returns (uint256[20] memory) {
+    function getChanceArray() public pure returns (uint8[20] memory) {
         return [5,5,5,5,5,
                 5,5,5,5,5,
                 5,5,5,5,5,
@@ -119,13 +119,13 @@ contract RandomIpfsNft is ERC721URIStorage, VRFConsumerBaseV2, Ownable {
         if (s_initialized) {
             revert RandomIpfsNft__AlreadyInitialized();
         }
-        genre_URIS = genreURIS;
+        s_GenreURIs = genreURIS;
         s_initialized = true;
     }
 
-    function getBreedFromModdedRng(uint256 moddedRng) public pure returns (Breed) {
+    function getGenreFromModdedRng(uint256 moddedRng) public pure returns (Genre) {
         uint256 cumulativeSum = 0;
-        uint256[20] memory chanceArray = getChanceArray();
+        uint8[20] memory chanceArray = getChanceArray();
         for (uint256 i = 0; i < chanceArray.length; i++) {
             if (moddedRng >= cumulativeSum && moddedRng < chanceArray[i]) {
                 return Genre(i);
@@ -147,16 +147,17 @@ contract RandomIpfsNft is ERC721URIStorage, VRFConsumerBaseV2, Ownable {
         return i_mintFee;
     }
 
-    function getDogTokenUris(uint256 index) public view returns (string memory) {
-        return s_dogTokenUris[index];
+    function getGenreURIs(uint256 index) public view returns (string memory) {
+        return s_GenreURIs[index];
     }
 
     function getInitialized() public view returns (bool) {
         return s_initialized;
     }
-
+    
     function getTokenCounter() public view returns (uint256) {
         return s_tokenCounter;
     }
+
 }
 
