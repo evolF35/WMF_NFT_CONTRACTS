@@ -40,8 +40,11 @@ contract WMF_NFT is ERC721URIStorage,Ownable {
         South_American,
         Middle_Eastern,
         Asian,
-        European,
-        Oceanic
+        Western_European,
+        Eastern_European,
+        Oceanic,
+        Caribbean,
+        Antartic
     }
 
     enum Genres{
@@ -87,5 +90,7 @@ contract WMF_NFT is ERC721URIStorage,Ownable {
     function setBaseURI(string calldata baseURI) external onlyOwner {
         _baseTokenURI = baseURI;
     }
+
+
 
 }
