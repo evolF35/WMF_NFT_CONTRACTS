@@ -57,6 +57,26 @@ contract WMF_NFT is ERC721URIStorage,Ownable {
         Heavy_Metal
     }
 
+    function mint(address to, uint256 tokenId) public {
+        require(!_exists(tokenId), "Token already minted");
+        require(whitelistedAddresses[to], "Address not whitelisted");   
+        _safeMint(to, tokenId);
+    }
+
+    function burn(uint256 tokenId) public {
+        require(_exists(tokenId), "Token does not exist");
+        require(ownerOf(tokenId) == msg.sender, "You are not the owner of this token");
+        _burn(tokenId);
+    }
+
+    function fusion(uint256 tokenID1, uint256 tokenID2) public{
+        require(_exists(tokenID1) && _exists(tokenID2), "One of the tokens does not exist");
+        require(ownerOf(tokenID1) == msg.sender && ownerOf(tokenID2) == msg.sender, "You don't own both");
+
+        uint256 newTokenID = tokenID1 + tokenID2;
+        _safeMint(msg.sender, newTokenID);
+    }
+
     // // metadata URI
     string private _baseTokenURI;
 
@@ -67,7 +87,5 @@ contract WMF_NFT is ERC721URIStorage,Ownable {
     function setBaseURI(string calldata baseURI) external onlyOwner {
         _baseTokenURI = baseURI;
     }
-
-
 
 }
