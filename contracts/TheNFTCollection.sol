@@ -72,12 +72,12 @@ contract WMF_NFT is ERC721URIStorage,Ownable {
         _burn(tokenId);
     }
 
-    function fusion(uint256 tokenID1, uint256 tokenID2) public{
+    function fusion(uint256 tokenID1, uint256 tokenID2, uint256 tokenID3) public{
         require(_exists(tokenID1) && _exists(tokenID2), "One of the tokens does not exist");
         require(ownerOf(tokenID1) == msg.sender && ownerOf(tokenID2) == msg.sender, "You don't own both");
 
-        uint256 newTokenID = tokenID1 + tokenID2;
-        _safeMint(msg.sender, newTokenID);
+
+        _safeMint(msg.sender, tokenID3);
     }
 
     // // metadata URI
