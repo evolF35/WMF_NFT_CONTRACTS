@@ -90,7 +90,4 @@ contract WMF_NFT is ERC721URIStorage,Ownable {
     function setBaseURI(string calldata baseURI) external onlyOwner {
         _baseTokenURI = baseURI;
     }
-
-
-
 }
