@@ -18,19 +18,29 @@ contract WMF_NFT is ERC721URIStorage,Ownable {
     function setWhitelistedAddress(address addr, bool status) public onlyOwner {
         whitelistedAddresses[addr] = status;
     }
+
     function isSaleOrTransferAllowed(address from, address to) internal view returns (bool) {
         return (whitelistedAddresses[from] && whitelistedAddresses[to]);
     }
+
     function transferFrom(address from, address to, uint256 tokenId) public override {
-        require(isSaleOrTransferAllowed(from, to), "Sale or transfer not allowed");
+        require(
+            isSaleOrTransferAllowed(from, to), "Sale or transfer not allowed");
+        
         super.transferFrom(from, to, tokenId);
     }
+
     function safeTransferFrom(address from, address to, uint256 tokenId, bytes memory _data) public override {
-        require(isSaleOrTransferAllowed(from, to), "Sale or transfer not allowed");
+        require(
+            isSaleOrTransferAllowed(from, to), "Sale or transfer not allowed");
+        
         super.safeTransferFrom(from, to, tokenId, _data);
     }
+
     function safeTransferFrom(address from, address to, uint256 tokenId) public override {
-        require(isSaleOrTransferAllowed(from, to), "Sale or transfer not allowed");
+        require(
+            isSaleOrTransferAllowed(from, to), "Sale or transfer not allowed");
+        
         super.safeTransferFrom(from, to, tokenId);
     }
 
@@ -52,30 +62,51 @@ contract WMF_NFT is ERC721URIStorage,Ownable {
         Jazz,
         Hip_hop,
         Classical,
-        Pop,
-        Country,
-        Electronic,
-        Reggae,
-        Blues,
-        Heavy_Metal
+        Electronic
     }
 
-    function mint(address to, uint256 tokenId) public {
-        require(!_exists(tokenId), "Token already minted");
-        require(whitelistedAddresses[to], "Address not whitelisted");   
+    struct TokenMetadata {
+        Cultures culture;
+        Genres genre;
+    }
+
+    mapping(uint256 => TokenMetadata) public tokenMetadata;
+
+    //1,125 combinations
+    
+    function mint(
+        address to, 
+        uint256 tokenId,
+        Cultures _culture,
+        Genres _genre
+                            ) public {
+        require(
+            !_exists(tokenId), "Token already minted");
+        require(
+            whitelistedAddresses[to], "Address not whitelisted");
+
         _safeMint(to, tokenId);
+        tokenMetadata[tokenId] = TokenMetadata(_culture, _genre); // Set metadata directly
     }
 
     function burn(uint256 tokenId) public {
-        require(_exists(tokenId), "Token does not exist");
-        require(ownerOf(tokenId) == msg.sender, "You are not the owner of this token");
+        require(
+            _exists(tokenId), "Token does not exist");
+        require(
+            ownerOf(tokenId) == msg.sender, "You are not the owner of this token");
+
         _burn(tokenId);
+        delete tokenMetadata[tokenId]; // Delete metadata associated with the token
     }
 
     function fusion(uint256 tokenID1, uint256 tokenID2, uint256 tokenID3) public{
-        require(_exists(tokenID1) && _exists(tokenID2), "One of the tokens does not exist");
-        require(ownerOf(tokenID1) == msg.sender && ownerOf(tokenID2) == msg.sender, "You don't own both");
-
+        require(
+            _exists(tokenID1) && _exists(tokenID2), "One of the tokens does not exist");
+        require(
+            ownerOf(tokenID1) == msg.sender && ownerOf(tokenID2) == msg.sender, "You don't own both");
+        require(
+            !(tokenMetadata[tokenID1].culture == tokenMetadata[tokenID2].culture),
+            "Cannot fuse tokens with the same culture");
 
         _safeMint(msg.sender, tokenID3);
     }
@@ -88,7 +119,16 @@ contract WMF_NFT is ERC721URIStorage,Ownable {
     }
 
     function setBaseURI(string calldata baseURI) external onlyOwner {
+        require(
+            block.timestamp < 7991303455, "Too late to change base URI");
+        
         _baseTokenURI = baseURI;
     }
 
 }
+
+
+// 3,375 total NFTs
+// 2,250 initial NFTs
+// 1,125 combinations
+
