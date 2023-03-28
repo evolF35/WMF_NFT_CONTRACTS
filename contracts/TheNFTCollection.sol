@@ -68,6 +68,7 @@ contract WMF_NFT is ERC721URIStorage,Ownable {
     struct TokenMetadata {
         Cultures culture;
         Genres genre;
+        bool isFused;
     }
 
     mapping(uint256 => TokenMetadata) public tokenMetadata;
@@ -86,7 +87,7 @@ contract WMF_NFT is ERC721URIStorage,Ownable {
             whitelistedAddresses[to], "Address not whitelisted");
 
         _safeMint(to, tokenId);
-        tokenMetadata[tokenId] = TokenMetadata(_culture, _genre); // Set metadata directly
+        tokenMetadata[tokenId] = TokenMetadata(_culture, _genre,false); // Set metadata directly
     }
 
     function burn(uint256 tokenId) public {
@@ -99,7 +100,7 @@ contract WMF_NFT is ERC721URIStorage,Ownable {
         delete tokenMetadata[tokenId]; // Delete metadata associated with the token
     }
 
-    function fusion(uint256 tokenID1, uint256 tokenID2, uint256 tokenID3) public{
+    function fusion(uint256 tokenID1, uint256 tokenID2) public{
         require(
             _exists(tokenID1) && _exists(tokenID2), "One of the tokens does not exist");
         require(
@@ -107,14 +108,19 @@ contract WMF_NFT is ERC721URIStorage,Ownable {
         require(
             !(tokenMetadata[tokenID1].culture == tokenMetadata[tokenID2].culture),
             "Cannot fuse tokens with the same culture");
+        require(
+            !_exists(tokenIDcalculator(tokenID1,tokenID2)),"Token already minted");
 
         uint256 newTokenID = tokenIDcalculator(tokenID1, tokenID2);
+        tokenMetadata[tokenID1].isFused = true;
+        tokenMetadata[tokenID2].isFused = true;
 
-        _safeMint(msg.sender, tokenID3);
+        _safeMint(msg.sender, newTokenID);
 
         tokenMetadata[newTokenID] = TokenMetadata({
             culture: Cultures((uint256(tokenMetadata[tokenID1].culture) + uint256(tokenMetadata[tokenID2].culture)) % 10),
-            genre: Genres((uint256(tokenMetadata[tokenID1].genre) + uint256(tokenMetadata[tokenID2].genre)) % 5)
+            genre: Genres((uint256(tokenMetadata[tokenID1].genre) + uint256(tokenMetadata[tokenID2].genre)) % 5),
+            isFused: true  // Set the isFused field to true, as this token is a result of fusion
         });
     }
 
@@ -126,7 +132,7 @@ contract WMF_NFT is ERC721URIStorage,Ownable {
         uint256 g2 = uint256(tokenMetadata[tokenID2].genre);
 
         // Combine the culture and genre indices to create a unique token ID
-        uint256 newTokenID = (c1 * 1000) + (g1 * 100) + (c2 * 10) + g2;
+        uint256 newTokenID = (c1 * 5 * 9 + g1 * 9 + c2 * 5 + g2) + 2251;
 
         return newTokenID;
     }
