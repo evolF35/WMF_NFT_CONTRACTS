@@ -108,7 +108,27 @@ contract WMF_NFT is ERC721URIStorage,Ownable {
             !(tokenMetadata[tokenID1].culture == tokenMetadata[tokenID2].culture),
             "Cannot fuse tokens with the same culture");
 
+        uint256 newTokenID = tokenIDcalculator(tokenID1, tokenID2);
+
         _safeMint(msg.sender, tokenID3);
+
+        tokenMetadata[newTokenID] = TokenMetadata({
+            culture: Cultures((uint256(tokenMetadata[tokenID1].culture) + uint256(tokenMetadata[tokenID2].culture)) % 10),
+            genre: Genres((uint256(tokenMetadata[tokenID1].genre) + uint256(tokenMetadata[tokenID2].genre)) % 5)
+        });
+    }
+
+    function tokenIDcalculator(uint256 tokenID1, uint256 tokenID2) public view returns (uint256) {
+        // Extract the culture and genre indices of the two initial NFTs
+        uint256 c1 = uint256(tokenMetadata[tokenID1].culture);
+        uint256 g1 = uint256(tokenMetadata[tokenID1].genre);
+        uint256 c2 = uint256(tokenMetadata[tokenID2].culture);
+        uint256 g2 = uint256(tokenMetadata[tokenID2].genre);
+
+        // Combine the culture and genre indices to create a unique token ID
+        uint256 newTokenID = (c1 * 1000) + (g1 * 100) + (c2 * 10) + g2;
+
+        return newTokenID;
     }
 
     // // metadata URI
@@ -124,7 +144,6 @@ contract WMF_NFT is ERC721URIStorage,Ownable {
         
         _baseTokenURI = baseURI;
     }
-
 }
 
 
@@ -132,3 +151,6 @@ contract WMF_NFT is ERC721URIStorage,Ownable {
 // 2,250 initial NFTs
 // 1,125 combinations
 
+
+// 1,125 combinations
+    // 
