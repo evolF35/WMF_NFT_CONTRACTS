@@ -210,7 +210,7 @@ function fulfillRandomWords(uint256 requestId, uint256[] memory randomWords) int
         uint256 tokenId,
         Cultures _culture,
         Genres _genre
-                            ) public {
+                            ) public onlyOwner {
         require(
             !_exists(tokenId), "Token already minted");
         require(
