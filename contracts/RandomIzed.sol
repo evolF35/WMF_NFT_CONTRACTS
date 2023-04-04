@@ -93,7 +93,6 @@ function fulfillRandomWords(uint256 requestId, uint256[] memory randomWords) int
     _setTokenURI(newItemId, s_TokenUris[moddedRng]);
 
     tokenMetadata[newItemId] = TokenMetadata(culture, genre, false);
-
 }
 
     function getCultureAndGenreFromModdedRng(uint256 moddedRng) public pure returns (Cultures, Genres) {
@@ -123,7 +122,7 @@ function fulfillRandomWords(uint256 requestId, uint256[] memory randomWords) int
         return i_mintFee;
     }
 
-    function getDogTokenUris(uint256 index) public view returns (string memory) {
+    function getTokenUris(uint256 index) public view returns (string memory) {
         return s_TokenUris[index];
     }
 
@@ -240,6 +239,8 @@ function fulfillRandomWords(uint256 requestId, uint256[] memory randomWords) int
             "Cannot fuse tokens with the same culture");
         require(
             !_exists(tokenIDcalculator(tokenID1,tokenID2)),"Token already minted");
+        require(
+            !tokenMetadata[tokenID1].isFused && !tokenMetadata[tokenID2].isFused, "One of the tokens is already fused");
 
         uint256 newTokenID = tokenIDcalculator(tokenID1, tokenID2);
         tokenMetadata[tokenID1].isFused = true;
@@ -281,7 +282,6 @@ function fulfillRandomWords(uint256 requestId, uint256[] memory randomWords) int
         _baseTokenURI = baseURI;
     }
 }
-
 
 // 3,375 total NFTs
 // 2,250 initial NFTs
