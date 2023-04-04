@@ -24,7 +24,7 @@ contract WMF_NFT is ERC721URIStorage,Ownable, VRFConsumerBaseV2 {
     uint256 private immutable i_mintFee;
     uint256 private s_tokenCounter;
     uint256 internal constant MAX_CHANCE_VALUE = 100;
-    string[] internal s_TokenUris;
+
     bool private s_initialized;
 
     mapping(uint256 => address) public s_requestIdToSender;
@@ -37,8 +37,6 @@ contract WMF_NFT is ERC721URIStorage,Ownable, VRFConsumerBaseV2 {
         bytes32 gasLane, // keyHash
         uint256 mintFee,
         uint32 callbackGasLimit,
-
-        string[50] memory musicURIS,
 
         string memory _name, 
         string memory _symbol, 
@@ -55,7 +53,6 @@ contract WMF_NFT is ERC721URIStorage,Ownable, VRFConsumerBaseV2 {
         i_mintFee = mintFee;
         i_callbackGasLimit = callbackGasLimit;
 
-        _initializeContract(musicURIS);
         s_tokenCounter = 0;
 
         transferOwnership(_owner);
@@ -108,13 +105,25 @@ function fulfillRandomWords(uint256 requestId, uint256[] memory randomWords) int
         return (Cultures(cultureIndex), Genres(genreIndex));
 }
 
-    function _initializeContract(string[50] memory musicURIS) private {
+    string[] internal s_TokenUris;
+
+    function setTokenUris(string[] calldata tokenUris) external onlyOwner {
+        require(
+            !s_initialized, "RandomIpfsNft__AlreadyInitialized");
+        require(
+            tokenUris.length == 50, "RandomIpfsNft__InvalidUriCount");
+        s_TokenUris = tokenUris;
+        s_initialized = true;
+}
+
+    function _initializeContract() public onlyOwner {
         if (s_initialized) {
             revert RandomIpfsNft__AlreadyInitialized();
         }
-        s_TokenUris = musicURIS;
         s_initialized = true;
     }
+
+
 
 // --------------------------------------------------------------------------------
 
