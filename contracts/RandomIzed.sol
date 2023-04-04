@@ -12,7 +12,7 @@ error RandomIpfsNft__NeedMoreETHSent();
 error RandomIpfsNft__RangeOutOfBounds();
 error RandomIpfsNft__TransferFailed();
 
-contract WMF_NFT is ERC721URIStorage,Ownable, VRFConsumerBaseV2 {
+contract WMF_NFT4 is ERC721URIStorage,Ownable, VRFConsumerBaseV2 {
 
     VRFCoordinatorV2Interface private immutable i_vrfCoordinator;
     uint64 private immutable i_subscriptionId;
@@ -105,16 +105,19 @@ function fulfillRandomWords(uint256 requestId, uint256[] memory randomWords) int
         return (Cultures(cultureIndex), Genres(genreIndex));
 }
 
-    string[] internal s_TokenUris;
+    string[50] internal s_TokenUris;
 
-    function setTokenUris(string[] calldata tokenUris) external onlyOwner {
-        require(
-            !s_initialized, "RandomIpfsNft__AlreadyInitialized");
-        require(
-            tokenUris.length == 50, "RandomIpfsNft__InvalidUriCount");
-        s_TokenUris = tokenUris;
-        s_initialized = true;
+function setTokenUris(string[50] calldata tokenUris) external onlyOwner {
+    require(!s_initialized, "RandomIpfsNft__AlreadyInitialized");
+    require(tokenUris.length == 50, "RandomIpfsNft__InvalidUriCount");
+
+    // Copy elements from the calldata array to the storage array
+    for (uint256 i = 0; i < tokenUris.length; ++i) {
+        s_TokenUris[i] = tokenUris[i];
+    }
+    s_initialized = true;
 }
+
 
     function _initializeContract() public onlyOwner {
         if (s_initialized) {
